@@ -1,26 +1,117 @@
 <!DOCTYPE html>
-<html>
+<html lang="ru">
 <head>
-  <meta charset="UTF-8">
-  <title>Game Portal</title>
-  <style>
-    body { font-family: sans-serif; background: #111; color: #eee; text-align: center; }
-    h1 { margin-top: 50px; }
-    .game-list { display: flex; justify-content: center; gap: 40px; margin-top: 50px; }
-    .game {
-      width: 200px; padding: 20px; background: #222; border-radius: 12px; cursor: pointer;
-      transition: transform .2s;
-    }
-    .game:hover { transform: scale(1.05); background: #333; }
-    a { color: #4caf50; text-decoration: none; font-weight: bold; }
-  </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ИгроКонь</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        .games-list {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+        .donation-section {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+        .progress-bar {
+            background: #e0e0e0;
+            border-radius: 5px;
+            margin: 10px 0;
+            overflow: hidden;
+        }
+        .progress-fill {
+            background: #4CAF50;
+            height: 20px;
+            border-radius: 5px;
+            transition: width 0.3s ease;
+        }
+        .donation-item {
+            margin: 15px 0;
+        }
+        .phone-number {
+            font-weight: bold;
+            color: #2196F3;
+            font-size: 1.1em;
+        }
+        .note {
+            background: #fff3cd;
+            padding: 10px;
+            border-radius: 5px;
+            margin: 10px 0;
+            border-left: 4px solid #ffc107;
+        }
+        h1 {
+            color: #333;
+            text-align: center;
+        }
+        a {
+            color: #2196F3;
+            text-decoration: none;
+        }
+        a:hover {
+            text-decoration: underline;
+        }
+    </style>
 </head>
 <body>
-  <h1>Выбери игру</h1>
-  <div class="game-list">
-    <div class="game"><a href="/zombiehanter/">🧟 Zombie Hanter</a></div>
-    <div class="game"><a href="/qazaqtech/">🚀 Qazaqtech</a></div>
-    <div class="game"><a href="/airportgame/">Airportgame</a></div>
-  </div>
+    <h1> ИгроКонь</h1>
+
+    <div class="games-list">
+        <h2> Доступные игры:</h2>
+        <p><a href="/zombiehanter/">🧟 ZombieHunter</a> - <em>(work in progress)</em></p>
+        <p><a href="/airportgame/">✈️ Airport Game</a></p>
+        <p><a href="/qazaqtech/">🚀Qaqaqtech</a></p>
+    </div>
+
+    <div class="donation-section">
+        <h2>💝 Поддержать проект</h2>
+        <p><strong>Переводы по номеру:</strong> <span class="phone-number">+7 777 661-19-82</span></p>
+
+        <div class="donation-item">
+            <strong>Доменное имя (раз в год):</strong>
+            <div class="progress-bar">
+                <div class="progress-fill" style="width: 0%"></div>
+            </div>
+            <div>0 из 1 700 ₸</div>
+        </div>
+
+        <div class="donation-item">
+            <strong>VPS сервер (раз в месяц):</strong>
+            <div class="progress-bar">
+                <div class="progress-fill" style="width: 16%"></div>
+            </div>
+            <div>500 из 3 100 ₸</div>
+        </div>
+
+        <div class="donation-item">
+            <strong>(Опционально) Платная версия ChatGPT (раз в месяц):</strong>
+            <div class="progress-bar">
+                <div class="progress-fill" style="width: 0%"></div>
+            </div>
+            <div>0 из 4 750 ₸</div>
+        </div>
+
+        <div class="note">
+            <strong>🎨 Ищем художников!</strong><br>
+            Нужна помощь в создании графики: от фавиконок до зомбаков. Оплата печеньками. 
+        </div>
+
+        <div class="note">
+            <strong>ZombieHunter</strong> - в разработке. Следите за обновлениями!
+        </div>
+    </div>
 </body>
 </html>
