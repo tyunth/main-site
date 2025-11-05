@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Game Portal</title>
+  <style>
+    body { font-family: sans-serif; background: #111; color: #eee; text-align: center; }
+    h1 { margin-top: 50px; }
+    .game-list { display: flex; justify-content: center; gap: 40px; margin-top: 50px; }
+    .game {
+      width: 200px; padding: 20px; background: #222; border-radius: 12px; cursor: pointer;
+      transition: transform .2s;
+    }
+    .game:hover { transform: scale(1.05); background: #333; }
+    a { color: #4caf50; text-decoration: none; font-weight: bold; }
+  </style>
+</head>
+<body>
+  <h1>Выбери игру</h1>
+  <div class="game-list">
+    <div class="game"><a href="/zombie/">🧟 Zombie Hunter</a></div>
+    <div class="game"><a href="/space/">🚀 Space Blaster</a></div>
+    <div class="game"><a href="/tank/">🪖 Tank Arena</a></div>
+  </div>
+</body>
+</html>
