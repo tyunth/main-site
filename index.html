@@ -3,85 +3,433 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ИгроКонь</title>
+    <title>Игра по дробям и ритму: Jingle Bells</title>
+    <script src="https://unpkg.com/tone@latest/build/Tone.js"></script>
     <style>
         body {
             font-family: Arial, sans-serif;
+            background-color: #ffffff;
+            color: #000000;
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-height: 100vh;
+        }
+        .overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.8);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+        }
+        .overlay button {
+            padding: 20px 40px;
+            font-size: 24px;
+            background-color: #ffd700;
+            color: #001122;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+        }
+        .container {
             max-width: 800px;
-            margin: 0 auto;
-            padding: 20px;
-            background-color: #f5f5f5;
+            width: 100%;
         }
-        .games-list {
-            background: white;
-            padding: 20px;
-            border-radius: 10px;
+        .original-play {
             margin-bottom: 20px;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            text-align: center;
         }
-        .donation-section {
-            background: white;
-            padding: 20px;
+        .original-play button {
+            padding: 15px 30px;
+            font-size: 20px;
+            background-color: #ffd700;
+            color: #001122;
+            border: none;
             border-radius: 10px;
+            cursor: pointer;
+        }
+        .measure {
+            border: 3px solid #ffd700;
+            border-radius: 10px;
+            padding: 20px;
             margin-bottom: 20px;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 10px;
+            transition: background-color 0.3s;
+        }
+        .measure.correct {
+            background-color: rgba(0, 255, 0, 0.2);
+        }
+        .note {
+            background-color: #ffffff;
+            color: #000000;
+            padding: 15px;
+            border-radius: 10px;
+            text-align: center;
+            cursor: pointer;
+            min-width: 80px;
+            font-size: 18px;
+            transition: background-color 0.2s;
+        }
+        .note:hover {
+            background-color: #f0f0f0;
+        }
+        /* .fraction removed */
+        .play-btn {
+            margin-top: 20px;
+            text-align: center;
+        }
+        .play-btn button {
+            padding: 10px 20px;
+            font-size: 18px;
+            background-color: #ffd700;
+            color: #001122;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+        }
+        .play-btn button:disabled {
+            background-color: #666666;
+            cursor: not-allowed;
+        }
+        .sum-display {
+            font-size: 16px;
+            margin-top: 10px;
+            text-align: center;
         }
         .progress-bar {
-            background: #e0e0e0;
+            width: 100%;
+            height: 10px;
+            background-color: #333;
             border-radius: 5px;
-            margin: 10px 0;
+            margin-top: 10px;
             overflow: hidden;
         }
         .progress-fill {
-            background: #4CAF50;
-            height: 20px;
-            border-radius: 5px;
-            transition: width 0.3s ease;
+            height: 100%;
+            background-color: #ffd700;
+            transition: width 0.3s;
         }
-        .donation-item {
-            margin: 15px 0;
-        }
-        .phone-number {
-            font-weight: bold;
-            color: #2196F3;
-            font-size: 1.1em;
-        }
-        .note {
-            background: #fff3cd;
-            padding: 10px;
-            border-radius: 5px;
-            margin: 10px 0;
-            border-left: 4px solid #ffc107;
-        }
-        h1 {
-            color: #333;
+        .check-all {
+            margin-top: 30px;
             text-align: center;
         }
-        a {
-            color: #2196F3;
-            text-decoration: none;
+        .check-all button {
+            padding: 15px 30px;
+            font-size: 20px;
+            background-color: #ffd700;
+            color: #001122;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
         }
-        a:hover {
-            text-decoration: underline;
+        .note.wrong {
+            border: 2px solid red;
+        }
+        .note.correct {
+            box-shadow: 0 0 10px green;
+        }
+        .note.correct-feedback {
+            border: 3px solid #4ecca3;
+            box-shadow: 0 0 10px #4ecca3;
+        }
+        .note.wrong-feedback {
+            border: 3px solid #e94560;
+        }
+        body.success {
+            background-color: rgba(255, 215, 0, 0.2);
+        }
+        .note svg {
+            width: 40px;
+            height: 60px;
+        }
+        .legend {
+            margin-bottom: 20px;
+            padding: 10px;
+            background-color: #f0f0f0;
+            border-radius: 10px;
+        }
+        .legend h3 {
+            color: #000000;
+            margin-top: 0;
+        }
+        .legend div {
+            display: flex;
+            align-items: center;
+            margin-bottom: 5px;
+        }
+        .note-icon {
+            margin-right: 10px;
+        }
+        .note-icon svg {
+            width: 30px;
+            height: 45px;
+        }
+        @media (max-width: 600px) {
+            .note {
+                min-width: 60px;
+                font-size: 16px;
+                padding: 10px;
+            }
+            .overlay button {
+                font-size: 20px;
+                padding: 15px 30px;
+            }
         }
     </style>
 </head>
 <body>
-    <h1> ИгроКонь</h1>
-
-    <div class="games-list">
-        <h2> Доступные игры:</h2>
-        <p><a href="/zombiehanter/">🧟 ZombieHunter</a> - <em>(work in progress)</em></p>
-        <p><a href="/airportgame/">✈️ Airport Game</a></p>
-        <p><a href="/qazaqtech/">🚀Qaqaqtech</a></p>
+    <div id="overlay" class="overlay">
+        <button id="start-btn">Начать игру</button>
     </div>
-
-
-
-        <div class="note">
-            <strong>ZombieHunter</strong> - в разработке. Следите за обновлениями!
+    <div class="container">
+        <h1 style="text-align: center; color: #ffd700;">Игра по дробям и ритму</h1>
+        <p id="correct-answer" style="font-size:12px; color:#ccc; text-align:center;"></p>
+        <div id="legend"></div>
+        <p style="text-align: center;">Щелкните по нотам, чтобы изменить их длительность. Сделайте сумму дробей в такте равной 4 (для 4/4). Прослушайте свой ритм!</p>
+        <div class="original-play">
+            <button id="play-original">Прослушать оригинал</button>
+        </div>
+        <div id="measures"></div>
+        <div class="check-all">
+            <button id="check-all-btn">Проверить всё</button>
         </div>
     </div>
-</body>
 
+    <script>
+        const melody = [
+            // Measure 1: Jingle (1/4), bells (1/4), jingle (1/2) -> E4, E4, E4
+            [
+                { note: "E4", correctDuration: "4n" },
+                { note: "E4", correctDuration: "4n" },
+                { note: "E4", correctDuration: "2n" }
+            ],
+            // Measure 2: Jingle (1/4), bells (1/4), jingle (1/2) -> E4, E4, E4
+            [
+                { note: "E4", correctDuration: "4n" },
+                { note: "E4", correctDuration: "4n" },
+                { note: "E4", correctDuration: "2n" }
+            ],
+            // Measure 3: Jingle (1/4), all (1/4), the (1/4), way (1/4) -> E4, G4, C4, D4
+            [
+                { note: "E4", correctDuration: "4n" },
+                { note: "G4", correctDuration: "4n" },
+                { note: "C4", correctDuration: "4n" },
+                { note: "D4", correctDuration: "4n" }
+            ],
+            // Measure 4: Oh what fun it is... -> C4 (1/1)
+            [
+                { note: "C4", correctDuration: "1n" }
+            ]
+        ];
+
+        const durations = ["16n", "8n", "4n", "2n", "1n"];
+        const fractions = ["1/16", "1/8", "1/4", "1/2", "1/1"];
+        const sixteenths = [1, 2, 4, 8, 16];
+
+        // Load from localStorage or random
+        let currentDurations = JSON.parse(localStorage.getItem('currentDurations')) || melody.map(measure => measure.map(() => Math.floor(Math.random() * 5))); // random start
+
+        function saveProgress() {
+            localStorage.setItem('currentDurations', JSON.stringify(currentDurations));
+        }
+
+        const noteNames = { 'C': 'До', 'D': 'Ре', 'E': 'Ми', 'F': 'Фа', 'G': 'Соль', 'A': 'Ля', 'B': 'Си' };
+
+        const reverb = new Tone.Reverb(0.3).toDestination();
+
+        function getNoteSVG(durationIndex) {
+            if (durationIndex === 0) { // 1/16
+                return `<svg viewBox="0 0 40 60"><ellipse cx="20" cy="25" rx="10" ry="15" fill="black"/><line x1="20" y1="10" x2="20" y2="50" stroke="black" stroke-width="2"/><path d="M20 10 L30 5 M20 8 L30 3" stroke="black" stroke-width="2"/></svg>`;
+            } else if (durationIndex === 1) { // 1/8
+                return `<svg viewBox="0 0 40 60"><ellipse cx="20" cy="25" rx="10" ry="15" fill="black"/><line x1="20" y1="10" x2="20" y2="50" stroke="black" stroke-width="2"/><path d="M20 10 L30 5" stroke="black" stroke-width="2"/></svg>`;
+            } else if (durationIndex === 2) { // 1/4
+                return `<svg viewBox="0 0 40 60"><ellipse cx="20" cy="25" rx="10" ry="15" fill="black"/><line x1="20" y1="10" x2="20" y2="50" stroke="black" stroke-width="2"/></svg>`;
+            } else if (durationIndex === 3) { // 1/2
+                return `<svg viewBox="0 0 40 60"><ellipse cx="20" cy="25" rx="10" ry="15" stroke="black" stroke-width="2" fill="white"/><line x1="20" y1="10" x2="20" y2="50" stroke="black" stroke-width="2"/></svg>`;
+            } else { // 1/1
+                return `<svg viewBox="0 0 40 60"><ellipse cx="20" cy="25" rx="10" ry="15" stroke="black" stroke-width="2" fill="white"/></svg>`;
+            }
+        }
+
+        const measuresDiv = document.getElementById('measures');
+        const overlay = document.getElementById('overlay');
+        const startBtn = document.getElementById('start-btn');
+        const playOriginalBtn = document.getElementById('play-original');
+
+        startBtn.addEventListener('click', async () => {
+            await Tone.start();
+            overlay.style.display = 'none';
+        });
+
+        playOriginalBtn.addEventListener('click', () => {
+            playMelody(melody.flat(), true);
+        });
+
+        const legendDiv = document.getElementById('legend');
+        legendDiv.innerHTML = `<div class="legend"><h3>Шпаргалка</h3><div><span class="note-icon">${getNoteSVG(4)}</span> Целая (1/1) = 16 шестнадцатых</div><div><span class="note-icon">${getNoteSVG(3)}</span> Половинная (1/2) = 8 шестнадцатых</div><div><span class="note-icon">${getNoteSVG(2)}</span> Четвертная (1/4) = 4 шестнадцатых</div><div><span class="note-icon">${getNoteSVG(1)}</span> Восьмая (1/8) = 2 шестнадцатых</div><div><span class="note-icon">${getNoteSVG(0)}</span> Шестнадцатая (1/16) = 1 шестнадцатая</div></div>`;
+
+        document.getElementById('correct-answer').textContent = 'Правильный ответ: ' + melody.map(m => '[' + m.map(n => n.correctDuration).join(',') + ']').join(' ');
+
+        function createMeasure(measureIndex) {
+            const measureDiv = document.createElement('div');
+            measureDiv.className = 'measure';
+            measureDiv.id = `measure-${measureIndex}`;
+
+            const notesDiv = document.createElement('div');
+            notesDiv.style.display = 'flex';
+            notesDiv.style.flexWrap = 'wrap';
+            notesDiv.style.justifyContent = 'center';
+            notesDiv.style.gap = '10px';
+
+            melody[measureIndex].forEach((noteData, noteIndex) => {
+                const noteDiv = document.createElement('div');
+                noteDiv.className = 'note';
+                noteDiv.innerHTML = `<div><strong style="font-size:20px;">${noteNames[noteData.note[0]]}</strong> (${noteData.note})</div><div>${fractions[currentDurations[measureIndex][noteIndex]]}</div>${getNoteSVG(currentDurations[measureIndex][noteIndex])}`;
+                noteDiv.addEventListener('click', () => {
+                    currentDurations[measureIndex][noteIndex] = (currentDurations[measureIndex][noteIndex] + 1) % 5;
+                    noteDiv.innerHTML = `<div><strong style="font-size:20px;">${noteNames[noteData.note[0]]}</strong> (${noteData.note})</div><div>${fractions[currentDurations[measureIndex][noteIndex]]}</div>${getNoteSVG(currentDurations[measureIndex][noteIndex])}`;
+                    saveProgress();
+                    const measureDiv = document.getElementById(`measure-${measureIndex}`);
+                    updateMeasure(measureIndex, measureDiv);
+                });
+                notesDiv.appendChild(noteDiv);
+            });
+
+            const playBtnDiv = document.createElement('div');
+            playBtnDiv.className = 'play-btn';
+            const playBtn = document.createElement('button');
+            playBtn.textContent = 'Играть';
+            playBtn.addEventListener('click', () => {
+                playMelody(melody[measureIndex], false, measureIndex);
+            });
+            playBtnDiv.appendChild(playBtn);
+
+            const sumDisplay = document.createElement('div');
+            sumDisplay.className = 'sum-display';
+
+            const progressBar = document.createElement('div');
+            progressBar.className = 'progress-bar';
+            const progressFill = document.createElement('div');
+            progressFill.className = 'progress-fill';
+            progressBar.appendChild(progressFill);
+
+            measureDiv.appendChild(notesDiv);
+            measureDiv.appendChild(playBtnDiv);
+            measureDiv.appendChild(sumDisplay);
+            measureDiv.appendChild(progressBar);
+
+            updateMeasure(measureIndex, measureDiv);
+
+            return measureDiv;
+        }
+
+        function updateMeasure(measureIndex, measureDiv) {
+            const sum = currentDurations[measureIndex].reduce((acc, idx) => acc + sixteenths[idx], 0);
+            const sumDisplay = measureDiv.querySelector('.sum-display');
+            const playBtn = measureDiv.querySelector('.play-btn button');
+
+            if (sum === 16) {
+                measureDiv.classList.add('correct');
+                playBtn.disabled = false;
+                sumDisplay.textContent = '1 ЦЕЛАЯ (4/4)';
+            } else {
+                measureDiv.classList.remove('correct');
+                playBtn.disabled = true;
+                const fractionSum = `${sum}/16`;
+                // simplify fraction if possible
+                if (sum % 4 === 0) {
+                    sumDisplay.textContent = `Сумма: ${sum / 4}/4`;
+                } else if (sum % 2 === 0) {
+                    sumDisplay.textContent = `Сумма: ${sum / 2}/8`;
+                } else {
+                    sumDisplay.textContent = `Сумма: ${fractionSum}`;
+                }
+            }
+
+            const progressFill = measureDiv.querySelector('.progress-fill');
+            progressFill.style.width = `${(sum / 16) * 100}%`;
+            if (sum < 16) {
+                progressFill.style.backgroundColor = 'red';
+            } else if (sum === 16) {
+                progressFill.style.backgroundColor = 'green';
+            } else {
+                progressFill.style.backgroundColor = 'orange';
+            }
+        }
+
+        function playMelody(notes, isOriginal, measureIndex = null) {
+            const events = [];
+            let time = 0;
+            notes.forEach((noteData, idx) => {
+                const duration = isOriginal ? noteData.correctDuration : durations[currentDurations[measureIndex !== null ? measureIndex : Math.floor(idx / melody[0].length)][idx % melody[0].length]];
+                events.push({ time, note: noteData.note, duration });
+                time += Tone.Time(duration).toSeconds();
+            });
+
+            if (measureIndex !== null && !isOriginal) {
+                const sum = currentDurations[measureIndex].reduce((acc, idx) => acc + sixteenths[idx], 0);
+                if (sum !== 16) {
+                    events.push({ time, note: "C2", duration: "8n" });
+                }
+            }
+
+            const part = new Tone.Part((time, event) => {
+                const synth = new Tone.Synth();
+                synth.connect(reverb);
+                synth.triggerAttackRelease(event.note, event.duration, time);
+            }, events).start();
+
+            Tone.Transport.start();
+            setTimeout(() => {
+                Tone.Transport.stop();
+                part.dispose();
+            }, time * 1000 + 3000);
+        }
+
+        melody.forEach((_, index) => {
+            measuresDiv.appendChild(createMeasure(index));
+        });
+
+        const checkAllBtn = document.getElementById('check-all-btn');
+        checkAllBtn.addEventListener('click', () => {
+            let allCorrect = true;
+            document.querySelectorAll('.note').forEach(note => {
+                note.classList.remove('correct-feedback', 'wrong-feedback');
+            });
+            document.body.classList.remove('success');
+            melody.forEach((measure, mIdx) => {
+                measure.forEach((note, nIdx) => {
+                    const correctIdx = durations.indexOf(note.correctDuration);
+                    const measureDiv = document.getElementById(`measure-${mIdx}`);
+                    const notes = measureDiv.querySelectorAll('.note');
+                    if (currentDurations[mIdx][nIdx] !== correctIdx) {
+                        allCorrect = false;
+                        notes[nIdx].classList.add('wrong-feedback');
+                    } else {
+                        notes[nIdx].classList.add('correct-feedback');
+                    }
+                });
+            });
+            playMelody(melody.flat(), false);
+            if (allCorrect) {
+                document.body.classList.add('success');
+                const synth = new Tone.Synth();
+                synth.connect(reverb);
+                synth.triggerAttackRelease('C5', '8n', Tone.now());
+                synth.triggerAttackRelease('E5', '8n', Tone.now() + 0.1);
+                synth.triggerAttackRelease('G5', '8n', Tone.now() + 0.2);
+            }
+        });
+    </script>
+</body>
 </html>
